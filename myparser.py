@@ -10,71 +10,60 @@ class Parser:
 
             if token_type == "KEYWORD" and value == "PRINT":
                 statements.append(self.parse_print())
-
-            elif token_type == "KEYWORD" and value == "VAR":
-                statements.append(self.parse_variable())
-
+            elif token_type == "IDENTIFIER":
+                statements.append(self.parse_assignment())
             else:
                 print(f"ERROR: Unexpected token '{value}' at position {self.position}")
-                self.position += 1  # Skip unknown tokens
-
+                self.position += 1
         return statements
 
     def parse_print(self):
-        """Parse PRINT statements like: ezhuthu "Hello";"""
         self.position += 1
         if self.position >= len(self.tokens):
-            print("ERROR: Expected a value after 'ezhuthu'")
+            print("ERROR: Expected value after 'ezhuthu'")
             return None
-        
-        value = self.tokens[self.position][1]
-        self.position += 1  # Move past the value
 
-        # Check if the next token is ';'
+        value = self.tokens[self.position][1]
+        self.position += 1
+
         if self.position < len(self.tokens) and self.tokens[self.position][1] == ";":
-            self.position += 1  # Move past the semicolon
+            self.position += 1
         else:
-            print("ERROR: Missing ';' at the end of print statement")
+            print("ERROR: Missing ';' at end of print statement")
             return None
 
         return ("PRINT", value)
 
-    def parse_variable(self):
-        """Parse variable assignments like: varuval x = 10;"""
-        self.position += 1  # Move to variable name
-        if self.position >= len(self.tokens):
-            print("ERROR: Expected variable name after 'varuval'")
-            return None
-        
+    def parse_assignment(self):
         var_name = self.tokens[self.position][1]
+        self.position += 1
 
-        self.position += 1  # Move past variable name
         if self.position >= len(self.tokens) or self.tokens[self.position][1] != "=":
             print(f"ERROR: Expected '=' after variable name '{var_name}'")
             return None
 
-        self.position += 1  # Move to variable value
+        self.position += 1
+
         if self.position >= len(self.tokens):
-            print(f"ERROR: Expected a value after '=' for variable '{var_name}'")
+            print(f"ERROR: Expected value after '=' for '{var_name}'")
             return None
 
         var_value = self.tokens[self.position][1]
+        self.position += 1
 
-        self.position += 1  # Move past the value
-
-        # Ensure the next token is a semicolon
         if self.position < len(self.tokens) and self.tokens[self.position][1] == ";":
-            self.position += 1  # Move past the semicolon
+            self.position += 1
         else:
-            print("ERROR: Missing ';' at the end of variable declaration")
+            print("ERROR: Missing ';' at end of assignment")
             return None
 
-        return ("VAR", var_name, var_value)
+        return ("ASSIGN", var_name, var_value)
 
+# Test
 if __name__ == "__main__":
-    from TAN.lexer import lexer
-    
-    code = 'ezhuthu "Vanakkam"; varuval x = 10;'
+    from lexer import lexer
+
+    code = 'a = 5; ezhuthu a;'
     tokens = lexer(code)
     parser = Parser(tokens)
     print(parser.parse())
