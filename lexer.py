@@ -8,12 +8,12 @@ TOKEN_REGEX = [
     (r'\b\d+\b', "NUMBER"),          # Numbers
     (r'\"[^\"]*\"', "STRING"),       # Strings inside quotes
     (r'\b[a-zA-Z_]\w*\b', "IDENTIFIER"),  # Variable names
-    (r'[=;+]', "SYMBOL"),            # Operators and punctuation
+    (r'[=;+*/-]', "SYMBOL"),            # Operators and punctuation
 ]
 
 def lexer(code):
     tokens = []
-    words = re.findall(r'\"[^\"]*\"|\b\w+\b|[=;+]', code)
+    words = re.findall(r'\"[^\"]*\"|\b\w+\b|[=;+*/-]', code)
 
     for word in words:
         if word in KEYWORDS:
@@ -24,7 +24,7 @@ def lexer(code):
             tokens.append(("STRING", word))
         elif re.match(r'\b[a-zA-Z_]\w*\b', word):
             tokens.append(("IDENTIFIER", word))
-        elif word in "=;+":
+        elif word in "=;+*/-":
             tokens.append(("SYMBOL", word))
         else:
             tokens.append(("UNKNOWN", word))

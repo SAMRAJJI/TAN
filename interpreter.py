@@ -1,3 +1,4 @@
+import re
 class Interpreter:
     def __init__(self, parsed_statements):
         self.parsed_statements = parsed_statements
@@ -12,31 +13,42 @@ class Interpreter:
             elif statement[0] == "ASSIGN":
                 self.handle_assign(statement[1], statement[2])
 
-    def handle_print(self, value):
-        if value.startswith('"') and value.endswith('"'):
-            print(value[1:-1])
-        elif value in self.variables:
-            print(self.variables[value])
-        else:
-            print("ERROR: Undefined variable", value)
+    def handle_print(self, expression):
+        result = self.evaluate_expression(expression)
+        if result is not None:
+            print(result)
 
-    def handle_assign(self, var_name, var_value):
-        # Auto-detect type
-        if var_value.isdigit():
-            self.variables[var_name] = int(var_value)
-        elif var_value.startswith('"') and var_value.endswith('"'):
-            self.variables[var_name] = var_value[1:-1]
-        elif var_value in self.variables:
-            self.variables[var_name] = self.variables[var_value]
-        else:
-            print(f"ERROR: Invalid value '{var_value}' for variable '{var_name}'")
+    def handle_assign(self, var_name, expression):
+        result = self.evaluate_expression(expression)
+        if result is not None:
+            self.variables[var_name] = result
 
-# Test
+    def evaluate_expression(self, expr):
+        if not expr:
+            return None
+        expr_str = ""
+        for token in expr:
+            if token in self.variables:
+                expr_str += str(self.variables[token])
+            else:
+                expr_str += token
+        try:
+            return eval(expr_str)
+        except Exception as e:
+            print(f"ERROR: Invalid expression '{' '.join(expr)}' — {e}")
+            return None
+
 if __name__ == "__main__":
+    import re
     from lexer import lexer
     from myparser import Parser
 
-    code = 'a = 10; ezhuthu a;'
+    code = '''
+    a = 10 + 5;
+    b = a * 2;
+    c = b / 3;
+    ezhuthu c;
+    '''
     tokens = lexer(code)
     parser = Parser(tokens)
     parsed_statements = parser.parse()
