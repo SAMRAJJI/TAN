@@ -23,7 +23,7 @@ class Interpreter:
 
 # Test case
 if __name__ == "__main__":
-    from TAN.lexer import lexer
+    from lexer import lexer
     from myparser import Parser
 
     code = 'ezhuthu "Vanakkam"; varuval x = 10; ezhuthu x;'

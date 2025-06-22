@@ -72,7 +72,7 @@ class Parser:
         return ("VAR", var_name, var_value)
 
 if __name__ == "__main__":
-    from TAN.lexer import lexer
+    from lexer import lexer
     
     code = 'ezhuthu "Vanakkam"; varuval x = 10;'
     tokens = lexer(code)
